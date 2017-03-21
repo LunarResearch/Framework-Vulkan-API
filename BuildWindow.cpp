@@ -8,7 +8,7 @@ BuildWindow::~BuildWindow() {
 	KillWindow();
 }
 
-void KeyDown(UINT8 key) {
+void KeyDown(uint8_t key) {
 	if (GetAsyncKeyState(VK_ESCAPE))
 		exit(0);
 }

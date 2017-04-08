@@ -67,7 +67,7 @@ void InstanceCreateInfoStructure() {
 	ApplicationInfoStructure();
 	InstanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	InstanceCreateInfo.pApplicationInfo = &ApplicationInfo;
-	InstanceCreateInfo.enabledExtensionCount = (uint32_t)InstanceExtension.size();
+	InstanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(InstanceExtension.size());
 	InstanceCreateInfo.ppEnabledExtensionNames = InstanceExtension.data();
 }
 
@@ -85,7 +85,7 @@ void DeviceCreateInfoStructure() {
 	DeviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	DeviceCreateInfo.queueCreateInfoCount = 1;
 	DeviceCreateInfo.pQueueCreateInfos = &DeviceQueueCreateInfo;
-	DeviceCreateInfo.enabledExtensionCount = (uint32_t)DeviceExtension.size();
+	DeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(DeviceExtension.size());
 	DeviceCreateInfo.ppEnabledExtensionNames = DeviceExtension.data();
 }
 
@@ -123,7 +123,7 @@ void CommandBufferAllocateInfoStructure() {
 	CommandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	CommandBufferAllocateInfo.commandPool = CommandPool;
 	CommandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	CommandBufferAllocateInfo.commandBufferCount = (uint32_t)CommandBuffer.size();
+	CommandBufferAllocateInfo.commandBufferCount = static_cast<uint32_t>(CommandBuffer.size());
 }
 
 void CommandBufferBeginInfoStructure() {
@@ -204,7 +204,7 @@ VKAPI_ATTR void VKAPI_CALL VkDestroyInstance() {
 
 VKAPI_ATTR VkResult VKAPI_CALL VkEnumeratePhysicalDevices() {
 	uint32_t PhysicalDeviceCount = 0;
-	vkEnumeratePhysicalDevices(Instance, &PhysicalDeviceCount, nullptr);
+	vkEnumeratePhysicalDevices(Instance, &PhysicalDeviceCount, VK_NULL_HANDLE);
 	std::vector<VkPhysicalDevice> PhysicalDeviceList(PhysicalDeviceCount);
 	vkEnumeratePhysicalDevices(Instance, &PhysicalDeviceCount, PhysicalDeviceList.data());
 	PhysicalDevice = PhysicalDeviceList[0];
@@ -213,7 +213,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkEnumeratePhysicalDevices() {
 
 VKAPI_ATTR void VKAPI_CALL VkGetPhysicalDeviceQueueFamilyProperties() {
 	uint32_t QueueFamilyPropertiesCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertiesCount, nullptr);
+	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertiesCount, VK_NULL_HANDLE);
 	std::vector<VkQueueFamilyProperties>QueueFamilyPropertiesList(QueueFamilyPropertiesCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertiesCount, QueueFamilyPropertiesList.data());
 	for (uint32_t i = 0; i < QueueFamilyPropertiesCount; ++i)
@@ -258,7 +258,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceCapabilities(VkPhysical
 
 VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceFormats() {
 	uint32_t SurfaceFormatCount = 0;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice, Surface, &SurfaceFormatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice, Surface, &SurfaceFormatCount, VK_NULL_HANDLE);
 	std::vector<VkSurfaceFormatKHR>SurfaceFormatList(SurfaceFormatCount);
 	vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice, Surface, &SurfaceFormatCount, SurfaceFormatList.data());
 	SurfaceFormat = SurfaceFormatList[0];
@@ -267,7 +267,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceFormats() {
 
 VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfacePresentModes() {
 	uint32_t PresentModeCount = 0;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice, Surface, &PresentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice, Surface, &PresentModeCount, VK_NULL_HANDLE);
 	std::vector<VkPresentModeKHR>PresentModeList(PresentModeCount);
 	vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice, Surface, &PresentModeCount, PresentModeList.data());
 	PresentMode = PresentModeList[0];
@@ -288,7 +288,7 @@ VKAPI_ATTR void VKAPI_CALL VkDestroySwapchain() {
 
 VKAPI_ATTR VkResult VKAPI_CALL VkGetSwapchainImages() {
 	uint32_t SwapchainImageCount = 0;
-	vkGetSwapchainImagesKHR(Device, Swapchain, &SwapchainImageCount, nullptr);
+	vkGetSwapchainImagesKHR(Device, Swapchain, &SwapchainImageCount, VK_NULL_HANDLE);
 	SwapchainImage.resize(SwapchainImageCount);
 	vkGetSwapchainImagesKHR(Device, Swapchain, &SwapchainImageCount, SwapchainImage.data());
 	return Result;
@@ -296,7 +296,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkGetSwapchainImages() {
 
 VKAPI_ATTR void VKAPI_CALL VkDestroyImage() {
 	for (auto &Image : SwapchainImage)
-		vkDestroyImage(Device,Image, nullptr);
+		vkDestroyImage(Device,Image, VK_NULL_HANDLE);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateCommandPool(VkDevice Device,
@@ -351,7 +351,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkEndCommandBuffer(VkCommandBuffer CommandBuffer)
 }
 
 VKAPI_ATTR void VKAPI_CALL VkDestroyCommandBuffers() {
-	vkFreeCommandBuffers(Device, CommandPool, (uint32_t)CommandBuffer.size(), CommandBuffer.data());
+	vkFreeCommandBuffers(Device, CommandPool, static_cast<uint32_t>(CommandBuffer.size()), CommandBuffer.data());
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateSemaphore(VkDevice Device,

@@ -44,14 +44,14 @@ void RENDER() {
 		ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		ImageMemoryBarrierClearToPresent.image = SwapchainImages[i];
 		ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
-		vkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
-		vkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+		VkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
+		VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 			0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierPresentToClear);
-		vkCmdClearColorImage(CommandBuffer[i], SwapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		VkCmdClearColorImage(CommandBuffer[i], SwapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			&ClearColorValue, 1, &ImageSubresourceRange);
-		vkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+		VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 			0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierClearToPresent);
-		vkEndCommandBuffer(CommandBuffer[i]);
+		VkEndCommandBuffer(CommandBuffer[i]);
 	}	
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &WaitSemaphores);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &SignalSemaphores);

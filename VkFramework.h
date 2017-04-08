@@ -6,8 +6,8 @@
 #include <vector>
 
 /*****************************************************************
-                -== Handles and constants ==-
-*****************************************************************/
+*                -== Handles and constants ==-                   *
+******************************************************************/
 
 VkResult Result;
 
@@ -34,8 +34,8 @@ uint32_t i = 0;
 uint32_t ImageIndex = 0;
 
 /*****************************************************************
-                  -== VK Structure Type ==-
-*****************************************************************/
+*                 -== VK Structure Type ==-                      *
+******************************************************************/
 
 VkApplicationInfo ApplicationInfo = {};
 VkInstanceCreateInfo InstanceCreateInfo = {};
@@ -189,8 +189,8 @@ void PresentInfoStructure() {
 }
 
 /*****************************************************************
-               -== Initialization functions ==-
-*****************************************************************/
+*              -== Initialization functions ==-                  *
+******************************************************************/
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateInstance(
 	const VkInstanceCreateInfo* InstanceCreateInfo,

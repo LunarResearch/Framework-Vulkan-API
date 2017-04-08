@@ -17,14 +17,14 @@ void RENDER() {
 	VkGetSwapchainImages();
 	VkCreateCommandPool(Device, &CommandPoolCreateInfo, VK_NULL_HANDLE, &CommandPool);
 	VkAllocateCommandBuffers();
-	VkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
-	VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+	VkBeginCommandBuffer(CommandBuffer[0], &CommandBufferBeginInfo);
+	VkCmdPipelineBarrier(CommandBuffer[0], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 		0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierPresentToClear);
-	VkCmdClearColorImage(CommandBuffer[i], SwapchainImage[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+	VkCmdClearColorImage(CommandBuffer[0], SwapchainImage[0], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		&ClearColorValue, 1, &ImageSubresourceRange);
-	VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+	VkCmdPipelineBarrier(CommandBuffer[0], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 		0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierClearToPresent);
-	VkEndCommandBuffer(CommandBuffer[i]);
+	VkEndCommandBuffer(CommandBuffer[0]);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &WaitSemaphores);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &SignalSemaphores);
 	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, WaitSemaphores, VK_NULL_HANDLE, &ImageIndex);

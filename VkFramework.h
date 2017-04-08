@@ -21,7 +21,7 @@ VkSemaphore WaitSemaphores = VK_NULL_HANDLE;
 VkSemaphore SignalSemaphores = VK_NULL_HANDLE;
 VkQueue Queue = VK_NULL_HANDLE;
 
-std::vector<VkImage> SwapchainImages;
+std::vector<VkImage> SwapchainImage;
 std::vector<VkCommandBuffer> CommandBuffer;
 
 std::vector<const char*> InstanceExtension;
@@ -119,7 +119,7 @@ void CommandPoolCreateInfoStructure() {
 }
 
 void CommandBufferAllocateInfoStructure() {
-	CommandBuffer.resize(SwapchainImages.size());
+	CommandBuffer.resize(SwapchainImage.size());
 	CommandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	CommandBufferAllocateInfo.commandPool = CommandPool;
 	CommandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -141,26 +141,24 @@ void ImageSubresourceRangeStructure() {
 
 void ImageMemoryBarrierStructure() {
 	ImageSubresourceRangeStructure();
-	for (i = 0; i < SwapchainImages.size(); ++i) {
-		ImageMemoryBarrierPresentToClear.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		ImageMemoryBarrierPresentToClear.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		ImageMemoryBarrierPresentToClear.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		ImageMemoryBarrierPresentToClear.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		ImageMemoryBarrierPresentToClear.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		ImageMemoryBarrierPresentToClear.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierPresentToClear.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierPresentToClear.image = SwapchainImages[i];
-		ImageMemoryBarrierPresentToClear.subresourceRange = ImageSubresourceRange;	
-		ImageMemoryBarrierClearToPresent.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		ImageMemoryBarrierClearToPresent.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		ImageMemoryBarrierClearToPresent.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		ImageMemoryBarrierClearToPresent.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		ImageMemoryBarrierClearToPresent.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		ImageMemoryBarrierClearToPresent.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierClearToPresent.image = SwapchainImages[i];
-		ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
-	}
+	ImageMemoryBarrierPresentToClear.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	ImageMemoryBarrierPresentToClear.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	ImageMemoryBarrierPresentToClear.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+	ImageMemoryBarrierPresentToClear.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	ImageMemoryBarrierPresentToClear.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	ImageMemoryBarrierPresentToClear.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	ImageMemoryBarrierPresentToClear.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	ImageMemoryBarrierPresentToClear.image = SwapchainImage[i];
+	ImageMemoryBarrierPresentToClear.subresourceRange = ImageSubresourceRange;
+	ImageMemoryBarrierClearToPresent.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	ImageMemoryBarrierClearToPresent.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+	ImageMemoryBarrierClearToPresent.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	ImageMemoryBarrierClearToPresent.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	ImageMemoryBarrierClearToPresent.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	ImageMemoryBarrierClearToPresent.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	ImageMemoryBarrierClearToPresent.image = SwapchainImage[i];
+	ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
 }
 
 void SemaphoreCreateInfoStructure() {
@@ -219,8 +217,7 @@ VKAPI_ATTR void VKAPI_CALL VkGetPhysicalDeviceQueueFamilyProperties() {
 	std::vector<VkQueueFamilyProperties>QueueFamilyPropertiesList(QueueFamilyPropertiesCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertiesCount, QueueFamilyPropertiesList.data());
 	for (uint32_t i = 0; i < QueueFamilyPropertiesCount; ++i)
-		if ((QueueFamilyPropertiesList[i].queueCount > 0) &&
-		    (QueueFamilyPropertiesList[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
+		if ((QueueFamilyPropertiesList[i].queueCount > 0) && (QueueFamilyPropertiesList[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
 			QueueFamilyIndex = i;
 }
 
@@ -292,14 +289,14 @@ VKAPI_ATTR void VKAPI_CALL VkDestroySwapchain() {
 VKAPI_ATTR VkResult VKAPI_CALL VkGetSwapchainImages() {
 	uint32_t SwapchainImageCount = 0;
 	vkGetSwapchainImagesKHR(Device, Swapchain, &SwapchainImageCount, nullptr);
-	SwapchainImages.resize(SwapchainImageCount);
-	vkGetSwapchainImagesKHR(Device, Swapchain, &SwapchainImageCount, SwapchainImages.data());
+	SwapchainImage.resize(SwapchainImageCount);
+	vkGetSwapchainImagesKHR(Device, Swapchain, &SwapchainImageCount, SwapchainImage.data());
 	return Result;
 }
 
 VKAPI_ATTR void VKAPI_CALL VkDestroyImage() {
-	for (auto &SwapchainImage : SwapchainImages)
-		vkDestroyImage(Device, SwapchainImage, nullptr);
+	for (auto &Image : SwapchainImage)
+		vkDestroyImage(Device,Image, nullptr);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateCommandPool(VkDevice Device,

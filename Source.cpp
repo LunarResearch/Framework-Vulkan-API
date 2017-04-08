@@ -17,12 +17,7 @@ void RENDER() {
 	VkGetSwapchainImages();
 	VkCreateCommandPool(Device, &CommandPoolCreateInfo, VK_NULL_HANDLE, &CommandPool);
 	VkAllocateCommandBuffers();
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = 0;
-	ImageSubresourceRange.levelCount = 1;
-	ImageSubresourceRange.baseArrayLayer = 0;
-	ImageSubresourceRange.layerCount = 1;
+	ImageSubresourceRangeStructure();
 	for (i = 0; i < SwapchainImages.size(); ++i) {
 		VkImageMemoryBarrier ImageMemoryBarrierPresentToClear{};
 		ImageMemoryBarrierPresentToClear.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -44,14 +39,15 @@ void RENDER() {
 		ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		ImageMemoryBarrierClearToPresent.image = SwapchainImages[i];
 		ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
-		VkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
-		VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+
+		vkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
+		vkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 			0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierPresentToClear);
-		VkCmdClearColorImage(CommandBuffer[i], SwapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		vkCmdClearColorImage(CommandBuffer[i], SwapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			&ClearColorValue, 1, &ImageSubresourceRange);
-		VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+		vkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 			0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierClearToPresent);
-		VkEndCommandBuffer(CommandBuffer[i]);
+		vkEndCommandBuffer(CommandBuffer[i]);
 	}	
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &WaitSemaphores);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &SignalSemaphores);

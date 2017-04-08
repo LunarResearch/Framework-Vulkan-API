@@ -30,7 +30,6 @@ std::vector<const char*> DeviceExtension;
 VkClearColorValue ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f };
 
 uint32_t QueueFamilyIndex = UINT32_MAX;
-uint32_t i = 0;
 uint32_t ImageIndex = 0;
 
 /*****************************************************************
@@ -148,7 +147,7 @@ void ImageMemoryBarrierStructure() {
 	ImageMemoryBarrierPresentToClear.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	ImageMemoryBarrierPresentToClear.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	ImageMemoryBarrierPresentToClear.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	ImageMemoryBarrierPresentToClear.image = SwapchainImage[i];
+	ImageMemoryBarrierPresentToClear.image = SwapchainImage[0];
 	ImageMemoryBarrierPresentToClear.subresourceRange = ImageSubresourceRange;
 	ImageMemoryBarrierClearToPresent.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 	ImageMemoryBarrierClearToPresent.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -157,7 +156,7 @@ void ImageMemoryBarrierStructure() {
 	ImageMemoryBarrierClearToPresent.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	ImageMemoryBarrierClearToPresent.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	ImageMemoryBarrierClearToPresent.image = SwapchainImage[i];
+	ImageMemoryBarrierClearToPresent.image = SwapchainImage[0];
 	ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
 }
 

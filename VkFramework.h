@@ -5,10 +5,6 @@
 #include <vulkan\vulkan.h>
 #include <vector>
 
-/*****************************************************************
-*                -== Handles and constants ==-                   *
-******************************************************************/
-
 VkResult Result;
 
 VkInstance Instance = VK_NULL_HANDLE;
@@ -17,8 +13,7 @@ VkDevice Device = VK_NULL_HANDLE;
 VkSurfaceKHR Surface = VK_NULL_HANDLE;
 VkSwapchainKHR Swapchain = VK_NULL_HANDLE;
 VkCommandPool CommandPool = VK_NULL_HANDLE;
-VkSemaphore WaitSemaphores = VK_NULL_HANDLE;
-VkSemaphore SignalSemaphores = VK_NULL_HANDLE;
+VkSemaphore Semaphore = VK_NULL_HANDLE;
 VkQueue Queue = VK_NULL_HANDLE;
 
 std::vector<VkImage> SwapchainImage;
@@ -31,10 +26,6 @@ VkClearColorValue ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f };
 
 uint32_t QueueFamilyIndex = UINT32_MAX;
 uint32_t ImageIndex = 0;
-
-/*****************************************************************
-*                 -== VK Structure Type ==-                      *
-******************************************************************/
 
 VkApplicationInfo ApplicationInfo = {};
 VkInstanceCreateInfo InstanceCreateInfo = {};
@@ -144,26 +135,20 @@ void SubmitInfoStructure() {
 	VkPipelineStageFlags PipelineStageFlags = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	SubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	SubmitInfo.waitSemaphoreCount = 1;
-	SubmitInfo.pWaitSemaphores = &WaitSemaphores;
+	SubmitInfo.pWaitSemaphores = &Semaphore;
 	SubmitInfo.pWaitDstStageMask = &PipelineStageFlags;
 	SubmitInfo.commandBufferCount = 1;
 	SubmitInfo.pCommandBuffers = &CommandBuffer[ImageIndex];
-	SubmitInfo.signalSemaphoreCount = 1;
-	SubmitInfo.pSignalSemaphores = &SignalSemaphores;
 }
 
 void PresentInfoStructure() {
 	PresentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	PresentInfo.waitSemaphoreCount = 1;
-	PresentInfo.pWaitSemaphores = &SignalSemaphores;
+	PresentInfo.pWaitSemaphores = &Semaphore;
 	PresentInfo.swapchainCount = 1;
 	PresentInfo.pSwapchains = &Swapchain;
 	PresentInfo.pImageIndices = &ImageIndex;
 }
-
-/*****************************************************************
-*              -== Initialization functions ==-                  *
-******************************************************************/
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateInstance(
 	const VkInstanceCreateInfo* InstanceCreateInfo,
@@ -192,7 +177,8 @@ VKAPI_ATTR void VKAPI_CALL VkGetPhysicalDeviceQueueFamilyProperties() {
 	std::vector<VkQueueFamilyProperties>QueueFamilyPropertiesList(QueueFamilyPropertiesCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertiesCount, QueueFamilyPropertiesList.data());
 	for (uint32_t i = 0; i < QueueFamilyPropertiesCount; ++i)
-		if ((QueueFamilyPropertiesList[i].queueCount > 0) && (QueueFamilyPropertiesList[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
+		if ((QueueFamilyPropertiesList[i].queueCount > 0) &&
+		    (QueueFamilyPropertiesList[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
 			QueueFamilyIndex = i;
 }
 

@@ -49,8 +49,6 @@ VkCommandPoolCreateInfo CommandPoolCreateInfo = {};
 VkCommandBufferAllocateInfo CommandBufferAllocateInfo = {};
 VkCommandBufferBeginInfo CommandBufferBeginInfo = {};
 VkImageSubresourceRange ImageSubresourceRange = {};
-VkImageMemoryBarrier ImageMemoryBarrierPresentToClear = {};
-VkImageMemoryBarrier ImageMemoryBarrierClearToPresent = {};
 VkSemaphoreCreateInfo SemaphoreCreateInfo = {};
 VkSubmitInfo SubmitInfo = {};
 VkPresentInfoKHR PresentInfo = {};
@@ -138,28 +136,6 @@ void ImageSubresourceRangeStructure() {
 	ImageSubresourceRange.layerCount = 1;
 }
 
-void ImageMemoryBarrierStructure() {
-	ImageSubresourceRangeStructure();
-	ImageMemoryBarrierPresentToClear.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	ImageMemoryBarrierPresentToClear.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-	ImageMemoryBarrierPresentToClear.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-	ImageMemoryBarrierPresentToClear.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	ImageMemoryBarrierPresentToClear.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	ImageMemoryBarrierPresentToClear.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	ImageMemoryBarrierPresentToClear.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	ImageMemoryBarrierPresentToClear.image = SwapchainImage[0];
-	ImageMemoryBarrierPresentToClear.subresourceRange = ImageSubresourceRange;
-	ImageMemoryBarrierClearToPresent.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	ImageMemoryBarrierClearToPresent.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-	ImageMemoryBarrierClearToPresent.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-	ImageMemoryBarrierClearToPresent.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	ImageMemoryBarrierClearToPresent.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	ImageMemoryBarrierClearToPresent.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	ImageMemoryBarrierClearToPresent.image = SwapchainImage[0];
-	ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
-}
-
 void SemaphoreCreateInfoStructure() {
 	SemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 }
@@ -216,8 +192,7 @@ VKAPI_ATTR void VKAPI_CALL VkGetPhysicalDeviceQueueFamilyProperties() {
 	std::vector<VkQueueFamilyProperties>QueueFamilyPropertiesList(QueueFamilyPropertiesCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertiesCount, QueueFamilyPropertiesList.data());
 	for (uint32_t i = 0; i < QueueFamilyPropertiesCount; ++i)
-		if ((QueueFamilyPropertiesList[i].queueCount > 0) &&
-		    (QueueFamilyPropertiesList[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
+		if ((QueueFamilyPropertiesList[i].queueCount > 0) && (QueueFamilyPropertiesList[i].queueFlags & VK_QUEUE_GRAPHICS_BIT))
 			QueueFamilyIndex = i;
 }
 
@@ -322,18 +297,6 @@ VKAPI_ATTR VkResult VKAPI_CALL VkBeginCommandBuffer(VkCommandBuffer CommandBuffe
 	CommandBufferBeginInfoStructure();
 	vkBeginCommandBuffer(CommandBuffer, CommandBufferBeginInfo);
 	return Result;
-}
-
-VKAPI_ATTR void VKAPI_CALL VkCmdPipelineBarrier(VkCommandBuffer CommandBuffer,
-	VkPipelineStageFlags SrcPipelineStageFlags, VkPipelineStageFlags DstPipelineStageFlags,
-	VkDependencyFlags DependencyFlags, uint32_t MemoryBarrierCount,
-	const VkMemoryBarrier* MemoryBarriers, uint32_t BufferMemoryBarrierCount,
-	const VkBufferMemoryBarrier* BufferMemoryBarrier, uint32_t ImageMemoryBarrierCount,
-	const VkImageMemoryBarrier* ImageMemoryBarrier) {
-	ImageMemoryBarrierStructure();
-	vkCmdPipelineBarrier(CommandBuffer, SrcPipelineStageFlags, DstPipelineStageFlags, DependencyFlags,
-		MemoryBarrierCount, MemoryBarriers, BufferMemoryBarrierCount, BufferMemoryBarrier,
-		ImageMemoryBarrierCount, ImageMemoryBarrier);
 }
 
 VKAPI_ATTR void VKAPI_CALL VkCmdClearColorImage(VkCommandBuffer CommandBuffer,

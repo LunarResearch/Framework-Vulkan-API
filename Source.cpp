@@ -18,19 +18,17 @@ void RENDER() {
 	VkCreateCommandPool(Device, &CommandPoolCreateInfo, VK_NULL_HANDLE, &CommandPool);
 	VkAllocateCommandBuffers();
 	VkBeginCommandBuffer(CommandBuffer[0], &CommandBufferBeginInfo);
-	VkCmdClearColorImage(CommandBuffer[0], SwapchainImage[0], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		&ClearColorValue, 1, &ImageSubresourceRange);
+	VkCmdClearColorImage(CommandBuffer[0], SwapchainImage[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			     &ClearColorValue, 1, &ImageSubresourceRange);
 	VkEndCommandBuffer(CommandBuffer[0]);
-	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &WaitSemaphores);
-	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &SignalSemaphores);
-	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, WaitSemaphores, VK_NULL_HANDLE, &ImageIndex);
+	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &Semaphore);
+	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, Semaphore, VK_NULL_HANDLE, &ImageIndex);
 	VkQueueSubmit(Queue, 1, &SubmitInfo, VK_NULL_HANDLE);
 	VkQueuePresent(Queue, &PresentInfo);
 }
 
 void DESTROY() {
-	VkDestroySemaphore(SignalSemaphores);
-	VkDestroySemaphore(WaitSemaphores);
+	VkDestroySemaphore(Semaphore);
 	VkDestroyCommandBuffers();
 	VkDestroyCommandPool();
 	VkDestroyImage();

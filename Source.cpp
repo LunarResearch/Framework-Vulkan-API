@@ -17,35 +17,14 @@ void RENDER() {
 	VkGetSwapchainImages();
 	VkCreateCommandPool(Device, &CommandPoolCreateInfo, VK_NULL_HANDLE, &CommandPool);
 	VkAllocateCommandBuffers();
-	ImageSubresourceRangeStructure();
-	for (i = 0; i < SwapchainImages.size(); ++i) {
-		ImageMemoryBarrierPresentToClear.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		ImageMemoryBarrierPresentToClear.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		ImageMemoryBarrierPresentToClear.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		ImageMemoryBarrierPresentToClear.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		ImageMemoryBarrierPresentToClear.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		ImageMemoryBarrierPresentToClear.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierPresentToClear.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierPresentToClear.image = SwapchainImages[i];
-		ImageMemoryBarrierPresentToClear.subresourceRange = ImageSubresourceRange;
-		ImageMemoryBarrierClearToPresent.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		ImageMemoryBarrierClearToPresent.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		ImageMemoryBarrierClearToPresent.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		ImageMemoryBarrierClearToPresent.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		ImageMemoryBarrierClearToPresent.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		ImageMemoryBarrierClearToPresent.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierClearToPresent.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		ImageMemoryBarrierClearToPresent.image = SwapchainImages[i];
-		ImageMemoryBarrierClearToPresent.subresourceRange = ImageSubresourceRange;
-		VkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
-		vkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-			0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierPresentToClear);
-		VkCmdClearColorImage(CommandBuffer[i], SwapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			&ClearColorValue, 1, &ImageSubresourceRange);
-		vkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-			0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierClearToPresent);
-		VkEndCommandBuffer(CommandBuffer[i]);
-	}	
+	VkBeginCommandBuffer(CommandBuffer[i], &CommandBufferBeginInfo);
+	VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+		0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierPresentToClear);
+	VkCmdClearColorImage(CommandBuffer[i], SwapchainImage[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		&ClearColorValue, 1, &ImageSubresourceRange);
+	VkCmdPipelineBarrier(CommandBuffer[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+		0, 0, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, 1, &ImageMemoryBarrierClearToPresent);
+	VkEndCommandBuffer(CommandBuffer[i]);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &WaitSemaphores);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &SignalSemaphores);
 	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, WaitSemaphores, VK_NULL_HANDLE, &ImageIndex);

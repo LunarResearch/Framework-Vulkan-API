@@ -61,8 +61,12 @@ void DestroyVulkan() {
 }
 
 void KeyDown(uint8_t key) {
-	if (GetAsyncKeyState(VK_ESCAPE))
+	if (GetAsyncKeyState(VK_ESCAPE)) {
+		DestroyPrimitive();
+		DestroyBackGround();
+		DestroyVulkan();
 		exit(0);
+	}
 }
 
 LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam) {

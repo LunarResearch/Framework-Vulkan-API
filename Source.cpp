@@ -1,41 +1,56 @@
 #include "VkFramework.h"
 
-void CREATE() {
-	VkCreateInstance(&InstanceCreateInfo, VK_NULL_HANDLE, &Instance);
-	VkEnumeratePhysicalDevices();
-	VkGetPhysicalDeviceQueueFamilyProperties();
-	VkCreateDevice(PhysicalDevice, &DeviceCreateInfo, VK_NULL_HANDLE, &Device);
+void CreateVulkan() {
+	VkCreateInstance(&InstanceCreateInfo, nullptr, &Instance);
+	VkEnumeratePhysicalDevices(Instance, 0);
+	VkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, 0);
+	VkCreateDevice(PhysicalDevice, &DeviceCreateInfo, nullptr, &Device);
 	VkGetDeviceQueue(Device, QueueFamilyIndex, 0, &Queue);
 }
 
-void RENDER() {
-	VkCreateWin32Surface(Instance, &Win32SurfaceCreateInfo, VK_NULL_HANDLE, &Surface);
+void DrawBackGround() {
+	VkCreateWin32Surface(Instance, &Win32SurfaceCreateInfo, nullptr, &Surface);
 	VkGetPhysicalDeviceSurfaceCapabilities(PhysicalDevice, Surface, &SurfaceCapabilities);
-	VkGetPhysicalDeviceSurfaceFormats();
-	VkGetPhysicalDeviceSurfacePresentModes();
-	VkCreateSwapchain(Device, &SwapchainCreateInfo, VK_NULL_HANDLE, &Swapchain);
-	VkGetSwapchainImages();
-	VkCreateCommandPool(Device, &CommandPoolCreateInfo, VK_NULL_HANDLE, &CommandPool);
-	VkAllocateCommandBuffers();
+	VkGetPhysicalDeviceSurfaceFormats(PhysicalDevice, Surface, 0);
+	VkGetPhysicalDeviceSurfacePresentModes(PhysicalDevice, Surface, 0);
+	VkCreateSwapchain(Device, &SwapchainCreateInfo, nullptr, &Swapchain);
+	VkGetSwapchainImages(Device, Swapchain, 0);
+	VkCreateCommandPool(Device, &CommandPoolCreateInfo, nullptr, &CommandPool);
+	VkAllocateCommandBuffers(Device, &CommandBufferAllocateInfo);
 	VkBeginCommandBuffer(CommandBuffer[0], &CommandBufferBeginInfo);
-	VkCmdClearColorImage(CommandBuffer[0], SwapchainImage[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-			     &ClearColorValue, 1, &ImageSubresourceRange);
+	ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f }; // Cornflower Blue
+	VkCmdClearColorImage(CommandBuffer[0], SwapchainImage[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, &ClearColorValue, 1, &ImageSubresourceRange);
 	VkEndCommandBuffer(CommandBuffer[0]);
-	VkCreateSemaphore(Device, &SemaphoreCreateInfo, VK_NULL_HANDLE, &Semaphore);
-	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, Semaphore, VK_NULL_HANDLE, &ImageIndex);
+	VkCreateSemaphore(Device, &SemaphoreCreateInfo, nullptr, &Semaphore);
+	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, Semaphore, nullptr, &ImageIndex);
 	VkQueueSubmit(Queue, 1, &SubmitInfo, VK_NULL_HANDLE);
 	VkQueuePresent(Queue, &PresentInfo);
 }
 
-void DESTROY() {
-	VkDestroySemaphore(Semaphore);
-	VkDestroyCommandBuffers();
-	VkDestroyCommandPool();
-	VkDestroyImage();
-	//VkDestroySwapchain();
-	VkDestroySurface();
-	VkDestroyDevice();
-	VkDestroyInstance();
+void DrawPrimitive() {
+	VkCreateRenderPass(Device, &RenderPassCreateInfo, nullptr, &RenderPass);
+	VkCreateImageView(Device, &ImageViewCreateInfo, nullptr);
+	VkCreateFramebuffer(Device, &FramebufferCreateInfo, nullptr);
+	//VkCreateShaderModule(Device, &ShaderModuleCreateInfo, nullptr, &ShaderModule);
+	VkCreatePipelineLayout(Device, &PipelineLayoutCreateInfo, nullptr, &PipelineLayout);
+	VkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &GraphicsPipelineCreateInfo, nullptr, &Pipeline);
+}
+
+void DestroyVulkan() {
+	VkDestroyPipeline(Device, Pipeline, nullptr);
+	VkDestroyPipelineLayout(Device, PipelineLayout, nullptr);
+	//VkDestroyShaderModule(Device, ShaderModule, nullptr);
+	VkDestroyFramebuffer(Device, nullptr);
+	VkDestroyImageView(Device, nullptr);
+	VkDestroyRenderPass(Device, RenderPass, nullptr);
+	VkDestroySemaphore(Device, Semaphore, nullptr);
+	VkDestroyCommandBuffers(Device, CommandPool);
+	VkDestroyCommandPool(Device, CommandPool, nullptr);
+	VkDestroyImage(Device, nullptr);
+	//VkDestroySwapchain(Device, Swapchain, nullptr);
+	VkDestroySurface(Instance, Surface, nullptr);
+	VkDestroyDevice(Device, nullptr);
+	VkDestroyInstance(Instance, nullptr);
 }
 
 void KeyDown(uint8_t key) {
@@ -47,11 +62,12 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 	switch (uMsg) {
 
 	case WM_CREATE:
-		CREATE();
+		CreateVulkan();
 		break;
 
 	case WM_PAINT:
-		RENDER();
+		DrawBackGround();
+		DrawPrimitive();
 		break;
 
 	case WM_KEYDOWN:
@@ -59,7 +75,7 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 		break;
 
 	case WM_DESTROY:
-		DESTROY();
+		DestroyVulkan();
 		PostQuitMessage(0);
 		break;
 

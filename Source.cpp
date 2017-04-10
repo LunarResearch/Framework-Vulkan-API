@@ -37,19 +37,25 @@ void DrawPrimitive() {
 	VkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &GraphicsPipelineCreateInfo, nullptr, &Pipeline);
 }
 
-void DestroyVulkan() {
+void DestroyPrimitive() {
 	VkDestroyPipeline(Device, Pipeline, nullptr);
 	VkDestroyPipelineLayout(Device, PipelineLayout, nullptr);
 	//VkDestroyShaderModule(Device, ShaderModule, nullptr);
 	VkDestroyFramebuffer(Device, nullptr);
 	VkDestroyImageView(Device, nullptr);
 	VkDestroyRenderPass(Device, RenderPass, nullptr);
+}
+
+void DestroyBackGround(){
 	VkDestroySemaphore(Device, Semaphore, nullptr);
 	VkDestroyCommandBuffers(Device, CommandPool);
 	VkDestroyCommandPool(Device, CommandPool, nullptr);
 	VkDestroyImage(Device, nullptr);
 	//VkDestroySwapchain(Device, Swapchain, nullptr);
 	VkDestroySurface(Instance, Surface, nullptr);
+}
+
+void DestroyVulkan() {
 	VkDestroyDevice(Device, nullptr);
 	VkDestroyInstance(Instance, nullptr);
 }
@@ -76,6 +82,8 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 		break;
 
 	case WM_DESTROY:
+		DestroyPrimitive();
+		DestroyBackGround();
 		DestroyVulkan();
 		PostQuitMessage(0);
 		break;

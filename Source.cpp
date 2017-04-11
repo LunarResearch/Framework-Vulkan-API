@@ -19,7 +19,8 @@ void DrawBackGround() {
 	VkAllocateCommandBuffers(Device, &CommandBufferAllocateInfo, &CommandBuffer);
 	VkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo);
 	ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f }; // Cornflower Blue
-	VkCmdClearColorImage(CommandBuffer, SwapchainImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, &ClearColorValue, 1, &ImageSubresourceRange);
+	VkCmdClearColorImage(CommandBuffer, SwapchainImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			     &ClearColorValue, 1, &ImageSubresourceRange);
 	VkEndCommandBuffer(CommandBuffer);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, nullptr, &Semaphore);
 	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, Semaphore, nullptr, &ImageIndex);

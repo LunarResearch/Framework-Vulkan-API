@@ -2,8 +2,8 @@
 
 void CreateVulkan() {
 	VkCreateInstance(&InstanceCreateInfo, nullptr, &Instance);
-	VkEnumeratePhysicalDevices(Instance, 0);
-	VkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, 0);
+	VkEnumeratePhysicalDevices(Instance, 0, &PhysicalDevice);
+	VkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, 0, nullptr);
 	VkCreateDevice(PhysicalDevice, &DeviceCreateInfo, nullptr, &Device);
 	VkGetDeviceQueue(Device, QueueFamilyIndex, 0, &Queue);
 }
@@ -11,17 +11,16 @@ void CreateVulkan() {
 void DrawBackGround() {
 	VkCreateWin32Surface(Instance, &Win32SurfaceCreateInfo, nullptr, &Surface);
 	VkGetPhysicalDeviceSurfaceCapabilities(PhysicalDevice, Surface, &SurfaceCapabilities);
-	VkGetPhysicalDeviceSurfaceFormats(PhysicalDevice, Surface, 0);
-	VkGetPhysicalDeviceSurfacePresentModes(PhysicalDevice, Surface, 0);
+	VkGetPhysicalDeviceSurfaceFormats(PhysicalDevice, Surface, 0, &SurfaceFormat);
+	VkGetPhysicalDeviceSurfacePresentModes(PhysicalDevice, Surface, 0, &PresentMode);
 	VkCreateSwapchain(Device, &SwapchainCreateInfo, nullptr, &Swapchain);
-	VkGetSwapchainImages(Device, Swapchain, 0);
+	VkGetSwapchainImages(Device, Swapchain, 0, &SwapchainImage);
 	VkCreateCommandPool(Device, &CommandPoolCreateInfo, nullptr, &CommandPool);
-	VkAllocateCommandBuffers(Device, &CommandBufferAllocateInfo);
-	VkBeginCommandBuffer(CommandBuffer[0], &CommandBufferBeginInfo);
+	VkAllocateCommandBuffers(Device, &CommandBufferAllocateInfo, &CommandBuffer);
+	VkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo);
 	ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f }; // Cornflower Blue
-	VkCmdClearColorImage(CommandBuffer[0], SwapchainImage[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-			     &ClearColorValue, 1, &ImageSubresourceRange);
-	VkEndCommandBuffer(CommandBuffer[0]);
+	VkCmdClearColorImage(CommandBuffer, SwapchainImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, &ClearColorValue, 1, &ImageSubresourceRange);
+	VkEndCommandBuffer(CommandBuffer);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, nullptr, &Semaphore);
 	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, Semaphore, nullptr, &ImageIndex);
 	VkQueueSubmit(Queue, 1, &SubmitInfo, VK_NULL_HANDLE);
@@ -30,8 +29,8 @@ void DrawBackGround() {
 
 void DrawPrimitive() {
 	VkCreateRenderPass(Device, &RenderPassCreateInfo, nullptr, &RenderPass);
-	VkCreateImageView(Device, &ImageViewCreateInfo, nullptr);
-	VkCreateFramebuffer(Device, &FramebufferCreateInfo, nullptr);
+	VkCreateImageView(Device, &ImageViewCreateInfo, nullptr, &SwapchainImageView);
+	VkCreateFramebuffer(Device, &FramebufferCreateInfo, nullptr, &FrameBuffer);
 	//VkCreateShaderModule(Device, &ShaderModuleCreateInfo, nullptr, &ShaderModule);
 	VkCreatePipelineLayout(Device, &PipelineLayoutCreateInfo, nullptr, &PipelineLayout);
 	VkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &GraphicsPipelineCreateInfo, nullptr, &Pipeline);
@@ -60,15 +59,6 @@ void DestroyVulkan() {
 	VkDestroyInstance(Instance, nullptr);
 }
 
-void KeyDown(uint8_t key) {
-	if (GetAsyncKeyState(VK_ESCAPE)) {
-		DestroyPrimitive();
-		DestroyBackGround();
-		DestroyVulkan();
-		exit(0);
-	}
-}
-
 LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam) {
 	switch (uMsg) {
 
@@ -79,10 +69,6 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 	case WM_PAINT:
 		DrawBackGround();
 		DrawPrimitive();
-		break;
-
-	case WM_KEYDOWN:
-		KeyDown(static_cast<uint8_t>(wParam));
 		break;
 
 	case WM_DESTROY:

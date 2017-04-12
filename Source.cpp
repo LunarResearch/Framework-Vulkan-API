@@ -41,8 +41,8 @@ void DestroyPrimitive() {
 	VkDestroyPipeline(Device, Pipeline, nullptr);
 	VkDestroyPipelineLayout(Device, PipelineLayout, nullptr);
 	//VkDestroyShaderModule(Device, ShaderModule, nullptr);
-	VkDestroyFramebuffer(Device, nullptr);
-	VkDestroyImageView(Device, nullptr);
+	VkDestroyFramebuffer(Device, FrameBuffer, nullptr);
+	VkDestroyImageView(Device, SwapchainImageView, nullptr);
 	VkDestroyRenderPass(Device, RenderPass, nullptr);
 }
 
@@ -50,7 +50,7 @@ void DestroyBackGround(){
 	VkDestroySemaphore(Device, Semaphore, nullptr);
 	VkDestroyCommandBuffers(Device, CommandPool);
 	VkDestroyCommandPool(Device, CommandPool, nullptr);
-	VkDestroyImage(Device, nullptr);
+	VkDestroyImage(Device, SwapchainImage, nullptr);
 	//VkDestroySwapchain(Device, Swapchain, nullptr);
 	VkDestroySurface(Instance, Surface, nullptr);
 }

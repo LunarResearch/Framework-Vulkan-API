@@ -246,8 +246,8 @@ std::vector<char> GetBinaryFileContents(std::string const &FileName) {
 }
 
 void ShaderModuleCreateInfoStructure(const char* FileName) {
-	const std::vector<char> Code = GetBinaryFileContents(FileName);
 	ShaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	const std::vector<char> Code = GetBinaryFileContents(FileName);
 	ShaderModuleCreateInfo.codeSize = Code.size();
 	ShaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(&Code[0]);
 }
@@ -294,8 +294,8 @@ VKAPI_ATTR VkResult VKAPI_CALL VkEnumeratePhysicalDevices(
 	return Result;
 }
 
-VKAPI_ATTR void VKAPI_CALL VkGetPhysicalDeviceQueueFamilyProperties(
-	VkPhysicalDevice PhysicalDevice, uint32_t QueueFamilyPropertyCount, VkQueueFamilyProperties* QueueFamilyProperties) {
+VKAPI_ATTR void VKAPI_CALL VkGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice PhysicalDevice,
+	uint32_t QueueFamilyPropertyCount, VkQueueFamilyProperties* QueueFamilyProperties) {
 	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertyCount, nullptr);
 	std::vector<VkQueueFamilyProperties>QueueFamilyPropertiesList(QueueFamilyPropertyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &QueueFamilyPropertyCount, QueueFamilyPropertiesList.data());
@@ -342,9 +342,8 @@ VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceCapabilities(VkPhysical
 	return Result;
 }
 
-VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceFormats(
-	VkPhysicalDevice PhysicalDevice, VkSurfaceKHR Surface,
-	uint32_t SurfaceFormatCount, VkSurfaceFormatKHR* SurfaceFormats) {
+VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceFormats(VkPhysicalDevice PhysicalDevice,
+	VkSurfaceKHR Surface, uint32_t SurfaceFormatCount, VkSurfaceFormatKHR* SurfaceFormats) {
 	vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice, Surface, &SurfaceFormatCount, nullptr);
 	std::vector<VkSurfaceFormatKHR>SurfaceFormatList(SurfaceFormatCount);
 	vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice, Surface, &SurfaceFormatCount, SurfaceFormatList.data());
@@ -352,8 +351,8 @@ VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfaceFormats(
 	return Result;
 }
 
-VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfacePresentModes(
-	VkPhysicalDevice PhysicalDevice, VkSurfaceKHR Surface, uint32_t PresentModeCount, VkPresentModeKHR* PresentModes) {
+VKAPI_ATTR VkResult VKAPI_CALL VkGetPhysicalDeviceSurfacePresentModes(VkPhysicalDevice PhysicalDevice,
+	VkSurfaceKHR Surface, uint32_t PresentModeCount, VkPresentModeKHR* PresentModes) {
 	vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice, Surface, &PresentModeCount, nullptr);
 	std::vector<VkPresentModeKHR>PresentModeList(PresentModeCount);
 	vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice, Surface, &PresentModeCount, PresentModeList.data());
@@ -383,10 +382,9 @@ VKAPI_ATTR VkResult VKAPI_CALL VkGetSwapchainImages(VkDevice Device,
 	return Result;
 }
 
-VKAPI_ATTR void VKAPI_CALL VkDestroyImage(VkDevice Device,
+VKAPI_ATTR void VKAPI_CALL VkDestroyImage(VkDevice Device, VkImage SwapchainImage,
 	const VkAllocationCallbacks* AllocationCallbacks) {
-	for (auto &VectorSwapchainImages : VectorSwapchainImage)
-		vkDestroyImage(Device, VectorSwapchainImages, AllocationCallbacks);
+	vkDestroyImage(Device, SwapchainImage, AllocationCallbacks);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateCommandPool(VkDevice Device,
@@ -417,8 +415,8 @@ VKAPI_ATTR VkResult VKAPI_CALL VkBeginCommandBuffer(VkCommandBuffer CommandBuffe
 	return Result;
 }
 
-VKAPI_ATTR void VKAPI_CALL VkCmdClearColorImage(VkCommandBuffer CommandBuffer,
-						VkImage SwapchainImage, VkImageLayout ImageLayout,
+VKAPI_ATTR void VKAPI_CALL VkCmdClearColorImage(
+	VkCommandBuffer CommandBuffer, VkImage SwapchainImage, VkImageLayout ImageLayout,
 	const VkClearColorValue* ClearColorValue, uint32_t ImageSubresourceRangeCount,
 	const VkImageSubresourceRange* ImageSubresourceRange) {
 	ImageSubresourceRangeStructure();
@@ -432,8 +430,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkEndCommandBuffer(VkCommandBuffer CommandBuffer)
 }
 
 VKAPI_ATTR void VKAPI_CALL VkDestroyCommandBuffers(VkDevice Device, VkCommandPool CommandPool) {
-	vkFreeCommandBuffers(Device, CommandPool,
-			     static_cast<uint32_t>(VectorCommandBuffer.size()), VectorCommandBuffer.data());
+	vkFreeCommandBuffers(Device, CommandPool, static_cast<uint32_t>(VectorCommandBuffer.size()), VectorCommandBuffer.data());
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateSemaphore(VkDevice Device,
@@ -495,10 +492,9 @@ VKAPI_ATTR VkResult VKAPI_CALL VkCreateImageView(VkDevice Device,
 	return Result;
 }
 
-VKAPI_ATTR void VKAPI_CALL VkDestroyImageView(VkDevice Device,
+VKAPI_ATTR void VKAPI_CALL VkDestroyImageView(VkDevice Device, VkImageView SwapchainImageView,
 	const VkAllocationCallbacks* AllocationCallbacks) {
-	for (auto &VectorSwapchainImageViews : VectorSwapchainImageView)
-		vkDestroyImageView(Device, VectorSwapchainImageViews, AllocationCallbacks);
+	vkDestroyImageView(Device, SwapchainImageView, AllocationCallbacks);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateFramebuffer(VkDevice Device,
@@ -510,10 +506,9 @@ VKAPI_ATTR VkResult VKAPI_CALL VkCreateFramebuffer(VkDevice Device,
 	return Result;
 }
 
-VKAPI_ATTR void VKAPI_CALL VkDestroyFramebuffer(VkDevice Device,
+VKAPI_ATTR void VKAPI_CALL VkDestroyFramebuffer(VkDevice Device, VkFramebuffer FrameBuffer,
 	const VkAllocationCallbacks* AllocationCallbacks) {
-	for (auto &VectorFrameBuffers : VectorFrameBuffer)
-		vkDestroyFramebuffer(Device, VectorFrameBuffers, AllocationCallbacks);
+	vkDestroyFramebuffer(Device, FrameBuffer, AllocationCallbacks);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL VkCreateShaderModule(VkDevice Device,

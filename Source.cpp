@@ -20,11 +20,11 @@ void DrawBackGround() {
 	VkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo);
 	ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f }; // Cornflower Blue
 	VkCmdClearColorImage(CommandBuffer, SwapchainImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-			     &ClearColorValue, 1, &ImageSubresourceRange);
+		&ClearColorValue, 1, &ImageSubresourceRange);
 	VkEndCommandBuffer(CommandBuffer);
 	VkCreateSemaphore(Device, &SemaphoreCreateInfo, nullptr, &Semaphore);
 	VkAcquireNextImage(Device, Swapchain, UINT64_MAX, Semaphore, nullptr, &ImageIndex);
-	VkQueueSubmit(Queue, 1, &SubmitInfo, VK_NULL_HANDLE);
+	VkQueueSubmit(Queue, 1, &SubmitInfo, nullptr);
 	VkQueuePresent(Queue, &PresentInfo);
 }
 
@@ -34,7 +34,7 @@ void DrawPrimitive() {
 	VkCreateFramebuffer(Device, &FramebufferCreateInfo, nullptr, &FrameBuffer);
 	//VkCreateShaderModule(Device, &ShaderModuleCreateInfo, nullptr, &ShaderModule);
 	VkCreatePipelineLayout(Device, &PipelineLayoutCreateInfo, nullptr, &PipelineLayout);
-	VkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &GraphicsPipelineCreateInfo, nullptr, &Pipeline);
+	VkCreateGraphicsPipelines(Device, nullptr, 1, &GraphicsPipelineCreateInfo, nullptr, &Pipeline);
 }
 
 void DestroyPrimitive() {

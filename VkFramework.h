@@ -1,38 +1,39 @@
 #pragma once
 
-#define VK_USE_PLATFORM_WIN32_KHR
-
-#include <vulkan\vulkan.h>
 #include <vector>
 #include <fstream>
 #include <iostream>
 
+#define VK_USE_PLATFORM_WIN32_KHR
+
+#include <vulkan\vulkan.h>
+
 VkResult Result;
 
-VkInstance Instance = VK_NULL_HANDLE;
-VkPhysicalDevice PhysicalDevice = VK_NULL_HANDLE;
-VkDevice Device = VK_NULL_HANDLE;
-VkSurfaceKHR Surface = VK_NULL_HANDLE;
-VkSwapchainKHR Swapchain = VK_NULL_HANDLE;
-VkImage SwapchainImage = VK_NULL_HANDLE;
-VkCommandPool CommandPool = VK_NULL_HANDLE;
-VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
-VkSemaphore Semaphore = VK_NULL_HANDLE;
-VkQueue Queue = VK_NULL_HANDLE;
-VkRenderPass RenderPass = VK_NULL_HANDLE;
-VkImageView SwapchainImageView = VK_NULL_HANDLE;
-VkFramebuffer FrameBuffer = VK_NULL_HANDLE;
-VkShaderModule ShaderModule = VK_NULL_HANDLE;
-VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
-VkPipeline Pipeline = VK_NULL_HANDLE;
+VkInstance Instance = nullptr;
+VkPhysicalDevice PhysicalDevice = nullptr;
+VkDevice Device = nullptr;
+VkSurfaceKHR Surface = nullptr;
+VkSwapchainKHR Swapchain = nullptr;
+VkImage SwapchainImage = nullptr;
+VkCommandPool CommandPool = nullptr;
+VkCommandBuffer CommandBuffer = nullptr;
+VkSemaphore Semaphore = nullptr;
+VkQueue Queue = nullptr;
+VkRenderPass RenderPass = nullptr;
+VkImageView SwapchainImageView = nullptr;
+VkFramebuffer FrameBuffer = nullptr;
+VkShaderModule ShaderModule = nullptr;
+VkPipelineLayout PipelineLayout = nullptr;
+VkPipeline Pipeline = nullptr;
 
 std::vector<VkImage> VectorSwapchainImage;
 std::vector<VkCommandBuffer> VectorCommandBuffer;
 std::vector<VkImageView> VectorSwapchainImageView;
 std::vector<VkFramebuffer> VectorFrameBuffer;
 
-std::vector<const char*> InstanceExtension;
-std::vector<const char*> DeviceExtension;
+std::vector<const char *> InstanceExtension;
+std::vector<const char *> DeviceExtension;
 
 uint32_t QueueFamilyIndex = UINT32_MAX;
 uint32_t ImageIndex = 0;
@@ -50,6 +51,7 @@ VkPresentModeKHR PresentMode = {};
 VkSwapchainCreateInfoKHR SwapchainCreateInfo = {};
 VkCommandPoolCreateInfo CommandPoolCreateInfo = {};
 VkCommandBufferAllocateInfo CommandBufferAllocateInfo = {};
+VkCommandBufferInheritanceInfo CommandBufferInheritanceInfo = {};
 VkCommandBufferBeginInfo CommandBufferBeginInfo = {};
 VkImageSubresourceRange ImageSubresourceRange = {};
 VkSemaphoreCreateInfo SemaphoreCreateInfo = {};
@@ -79,7 +81,12 @@ VkGraphicsPipelineCreateInfo GraphicsPipelineCreateInfo = {};
 
 void ApplicationInfoStructure() {
 	ApplicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	ApplicationInfo.apiVersion = VK_API_VERSION_1_0;
+	ApplicationInfo.pNext = nullptr;
+	ApplicationInfo.pApplicationName = "vkLiteSDKApplication";
+	ApplicationInfo.applicationVersion = 1;
+	ApplicationInfo.pEngineName = "vkLiteSDKEngine";
+	ApplicationInfo.engineVersion = 1;
+	ApplicationInfo.apiVersion = VK_API_VERSION_1_1;
 }
 
 void InstanceCreateInfoStructure() {
@@ -87,14 +94,20 @@ void InstanceCreateInfoStructure() {
 	InstanceExtension.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 	ApplicationInfoStructure();
 	InstanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	InstanceCreateInfo.pNext = nullptr;
+	InstanceCreateInfo.flags = 0;
 	InstanceCreateInfo.pApplicationInfo = &ApplicationInfo;
+	InstanceCreateInfo.enabledLayerCount = 0;
+	InstanceCreateInfo.ppEnabledLayerNames = nullptr;
 	InstanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(InstanceExtension.size());
-	InstanceCreateInfo.ppEnabledExtensionNames = InstanceExtension.data();
+	InstanceCreateInfo.ppEnabledExtensionNames = &InstanceExtension[0];
 }
 
 void DeviceQueueCreateInfoStructure() {
 	std::vector<float> QueuePriorities = { 1.0f };
 	DeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	DeviceQueueCreateInfo.pNext = nullptr;
+	DeviceQueueCreateInfo.flags = 0;
 	DeviceQueueCreateInfo.queueFamilyIndex = QueueFamilyIndex;
 	DeviceQueueCreateInfo.queueCount = static_cast<uint32_t>(QueuePriorities.size());
 	DeviceQueueCreateInfo.pQueuePriorities = &QueuePriorities[0];
@@ -104,20 +117,29 @@ void DeviceCreateInfoStructure() {
 	DeviceExtension.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 	DeviceQueueCreateInfoStructure();
 	DeviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	DeviceCreateInfo.pNext = nullptr;
+	DeviceCreateInfo.flags = 0;
 	DeviceCreateInfo.queueCreateInfoCount = 1;
 	DeviceCreateInfo.pQueueCreateInfos = &DeviceQueueCreateInfo;
+	DeviceCreateInfo.enabledLayerCount = 0;
+	DeviceCreateInfo.ppEnabledLayerNames = nullptr;
 	DeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(DeviceExtension.size());
-	DeviceCreateInfo.ppEnabledExtensionNames = DeviceExtension.data();
+	DeviceCreateInfo.ppEnabledExtensionNames = &DeviceExtension[0];
+	DeviceCreateInfo.pEnabledFeatures = nullptr;
 }
 
 void Win32SurfaceCreateInfoStructure(_In_ HINSTANCE hInstance, _In_ HWND hWnd) {
 	Win32SurfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	Win32SurfaceCreateInfo.pNext = nullptr;
+	Win32SurfaceCreateInfo.flags = 0;
 	Win32SurfaceCreateInfo.hinstance = hInstance;
 	Win32SurfaceCreateInfo.hwnd = hWnd;
 }
 
 void SwapchainCreateInfoStructure() {
 	SwapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	SwapchainCreateInfo.pNext = nullptr;
+	SwapchainCreateInfo.flags = 0;
 	SwapchainCreateInfo.surface = Surface;
 	SwapchainCreateInfo.minImageCount = SurfaceCapabilities.minImageCount;
 	SwapchainCreateInfo.imageFormat = SurfaceFormat.format;
@@ -128,27 +150,46 @@ void SwapchainCreateInfoStructure() {
 	SwapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	SwapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	SwapchainCreateInfo.queueFamilyIndexCount = 0;
+	SwapchainCreateInfo.pQueueFamilyIndices = &QueueFamilyIndex;
 	SwapchainCreateInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	SwapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	SwapchainCreateInfo.presentMode = PresentMode;
 	SwapchainCreateInfo.clipped = VK_TRUE;
+	SwapchainCreateInfo.oldSwapchain = nullptr;
 }
 
 void CommandPoolCreateInfoStructure() {
 	CommandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	CommandPoolCreateInfo.pNext = nullptr;
+	CommandPoolCreateInfo.flags = 0;
 	CommandPoolCreateInfo.queueFamilyIndex = QueueFamilyIndex;
 }
 
 void CommandBufferAllocateInfoStructure() {
 	VectorCommandBuffer.resize(VectorSwapchainImage.size());
 	CommandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	CommandBufferAllocateInfo.pNext = nullptr;
 	CommandBufferAllocateInfo.commandPool = CommandPool;
 	CommandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	CommandBufferAllocateInfo.commandBufferCount = static_cast<uint32_t>(VectorCommandBuffer.size());
 }
 
+void CommandBufferInheritanceInfoStructure() {
+	CommandBufferInheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+	CommandBufferInheritanceInfo.pNext = nullptr;
+	CommandBufferInheritanceInfo.renderPass = RenderPass;
+	CommandBufferInheritanceInfo.subpass = 0;
+	CommandBufferInheritanceInfo.framebuffer = FrameBuffer;
+	CommandBufferInheritanceInfo.occlusionQueryEnable = VK_TRUE;
+	CommandBufferInheritanceInfo.queryFlags = VK_QUERY_CONTROL_PRECISE_BIT;
+	CommandBufferInheritanceInfo.pipelineStatistics = VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT;
+}
+
 void CommandBufferBeginInfoStructure() {
+	CommandBufferInheritanceInfoStructure();
 	CommandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	CommandBufferBeginInfo.pNext = nullptr;
+	CommandBufferBeginInfo.pInheritanceInfo = &CommandBufferInheritanceInfo;
 	CommandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 }
 
@@ -162,28 +203,35 @@ void ImageSubresourceRangeStructure() {
 
 void SemaphoreCreateInfoStructure() {
 	SemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	SemaphoreCreateInfo.pNext = nullptr;
+	SemaphoreCreateInfo.flags = 0;
 }
 
 void SubmitInfoStructure() {
-	VkPipelineStageFlags PipelineStageFlags = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	SubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	SubmitInfo.pNext = nullptr;
 	SubmitInfo.waitSemaphoreCount = 1;
 	SubmitInfo.pWaitSemaphores = &Semaphore;
-	SubmitInfo.pWaitDstStageMask = &PipelineStageFlags;
+	SubmitInfo.pWaitDstStageMask = reinterpret_cast<VkPipelineStageFlags *>(VK_PIPELINE_STAGE_VERTEX_SHADER_BIT);
 	SubmitInfo.commandBufferCount = 1;
 	SubmitInfo.pCommandBuffers = &VectorCommandBuffer[ImageIndex];
+	SubmitInfo.signalSemaphoreCount = 1;
+	SubmitInfo.pSignalSemaphores = &Semaphore;
 }
 
 void PresentInfoStructure() {
 	PresentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	PresentInfo.pNext = nullptr;
 	PresentInfo.waitSemaphoreCount = 1;
 	PresentInfo.pWaitSemaphores = &Semaphore;
 	PresentInfo.swapchainCount = 1;
 	PresentInfo.pSwapchains = &Swapchain;
 	PresentInfo.pImageIndices = &ImageIndex;
+	PresentInfo.pResults = &Result;
 }
 
 void AttachmentDescriptionStructure() {
+	AttachmentDescription.flags = 0;
 	AttachmentDescription.format = SurfaceFormat.format;
 	AttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 	AttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -195,43 +243,58 @@ void AttachmentDescriptionStructure() {
 }
 
 void AttachmentReferenceStructure() {
+	AttachmentReference.attachment = 0;
 	AttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 }
 
 void SubpassDescriptionStructure() {
 	AttachmentReferenceStructure();
+	SubpassDescription.flags = 0;
 	SubpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	SubpassDescription.inputAttachmentCount = 0;
+	SubpassDescription.pInputAttachments = nullptr;
 	SubpassDescription.colorAttachmentCount = 1;
 	SubpassDescription.pColorAttachments = &AttachmentReference;
+	SubpassDescription.pResolveAttachments = nullptr;
+	SubpassDescription.preserveAttachmentCount = 0;
+	SubpassDescription.pPreserveAttachments = nullptr;
 }
 
 void RenderPassCreateInfoStructure() {
 	AttachmentDescriptionStructure();
 	SubpassDescriptionStructure();
 	RenderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	RenderPassCreateInfo.pNext = nullptr;
+	RenderPassCreateInfo.flags = 0;
 	RenderPassCreateInfo.attachmentCount = 1;
 	RenderPassCreateInfo.pAttachments = &AttachmentDescription;
 	RenderPassCreateInfo.subpassCount = 1;
 	RenderPassCreateInfo.pSubpasses = &SubpassDescription;
+	RenderPassCreateInfo.dependencyCount = 0;
+	RenderPassCreateInfo.pDependencies = nullptr;
 }
 
 void ImageViewCreateInfoStructure() {
 	ImageSubresourceRangeStructure();
 	VectorSwapchainImageView.resize(VectorSwapchainImage.size());
 	ImageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	ImageViewCreateInfo.format = SurfaceFormat.format;
+	ImageViewCreateInfo.pNext = nullptr;
+	ImageViewCreateInfo.flags = 0;
 	ImageViewCreateInfo.image = SwapchainImage;
-	ImageViewCreateInfo.subresourceRange = ImageSubresourceRange;
 	ImageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+	ImageViewCreateInfo.format = SurfaceFormat.format;
 	ImageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
 	ImageViewCreateInfo.components.g= VK_COMPONENT_SWIZZLE_G;
 	ImageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
 	ImageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+	ImageViewCreateInfo.subresourceRange = ImageSubresourceRange;
 }
 
 void FramebufferCreateInfoStructure() {
 	VectorFrameBuffer.resize(VectorSwapchainImageView.size());
 	FramebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+	FramebufferCreateInfo.pNext = nullptr;
+	FramebufferCreateInfo.flags = 0;
 	FramebufferCreateInfo.renderPass = RenderPass;
 	FramebufferCreateInfo.attachmentCount = 1;
 	FramebufferCreateInfo.pAttachments = &SwapchainImageView;
@@ -247,13 +310,21 @@ std::vector<char> GetBinaryFileContents(std::string const &FileName) {
 
 void ShaderModuleCreateInfoStructure(const char* FileName) {
 	ShaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	ShaderModuleCreateInfo.pNext = nullptr;
+	ShaderModuleCreateInfo.flags = 0;
 	const std::vector<char> Code = GetBinaryFileContents(FileName);
 	ShaderModuleCreateInfo.codeSize = Code.size();
-	ShaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(&Code[0]);
+	ShaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t *>(&Code[0]);
 }
 
 void PipelineLayoutCreateInfoStructure() {
 	PipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	PipelineLayoutCreateInfo.pNext = nullptr;
+	PipelineLayoutCreateInfo.flags = 0;
+	PipelineLayoutCreateInfo.setLayoutCount = 0;
+	PipelineLayoutCreateInfo.pSetLayouts = nullptr;
+	PipelineLayoutCreateInfo.pushConstantRangeCount = 0;
+	PipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
 }
 
 // std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageCreateInfoStructure()
@@ -543,7 +614,7 @@ VKAPI_ATTR VkResult VKAPI_CALL VkCreateGraphicsPipelines(VkDevice Device,
 	const VkAllocationCallbacks* AllocationCallbacks, VkPipeline* Pipeline) {
 	GraphicsPipelineCreateInfoStructure();
 	vkCreateGraphicsPipelines(Device, PipelineCache, CreateInfoCount,
-				  GraphicsPipelineCreateInfo, AllocationCallbacks, Pipeline);
+		GraphicsPipelineCreateInfo, AllocationCallbacks, Pipeline);
 	return Result;
 }
 

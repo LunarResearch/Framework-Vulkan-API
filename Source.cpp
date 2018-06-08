@@ -60,11 +60,12 @@ void DestroyVulkan() {
 	VkDestroyInstance(Instance, nullptr);
 }
 
-LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam) {
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 
 	case WM_CREATE:
 		CreateVulkan();
+		Win32SurfaceCreateInfoStructure(reinterpret_cast<CREATESTRUCT *>(lParam)->hInstance, hWnd);
 		break;
 
 	case WM_PAINT:
@@ -72,10 +73,14 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 		DrawPrimitive();
 		break;
 
-	case WM_DESTROY:
+	case WM_CLOSE:
 		DestroyPrimitive();
 		DestroyBackGround();
 		DestroyVulkan();
+		DestroyWindow(hWnd);
+		break;
+
+	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 
@@ -85,28 +90,43 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance,
-	_In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
-	WNDCLASSEX wc = {};
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WindowProc;
-	wc.hInstance = hInstance;
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.lpszClassName = "WindowClass";
-	RegisterClassEx(&wc);
-	HWND hWnd = CreateWindow(wc.lpszClassName, "Test",
-		WS_SYSMENU | WS_MINIMIZEBOX,
+int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	MSG msg;
+	BOOL bRet;
+	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	if (!hPrevInstance) {
+		WNDCLASS MainWndClass = {
+			0,
+			(WNDPROC)WindowProc,
+			0,
+			0,
+			hInstance,
+			LoadIcon((HINSTANCE)NULL, IDI_APPLICATION),
+			LoadCursor((HINSTANCE)NULL, IDC_ARROW),
+			(HBRUSH)NULL,
+			"MainMenu",
+			"MainWndClass"
+		};
+		if (!RegisterClass(&MainWndClass)) return FALSE;
+	}
+
+	HWND hWnd = CreateWindow("MainWndClass", "vkLiteSDK v0.1b",
+		WS_OVERLAPPEDWINDOW,
 		(GetSystemMetrics(SM_CXSCREEN) - 1024) / 2,
 		(GetSystemMetrics(SM_CYSCREEN) - 576) / 2,
-		1024, 576, NULL, NULL, hInstance, 0);
-	Win32SurfaceCreateInfoStructure(hInstance, hWnd);
+		1024, 576, (HWND)NULL, (HMENU)NULL, hInstance, (LPVOID)NULL);
+
 	ShowWindow(hWnd, nCmdShow);
-	MSG msg = {};
-	while (msg.message != WM_QUIT)
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+	UpdateWindow(hWnd);
+
+	while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0) {
+		if (bRet == -1) exit(-1);
+		else {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-	return static_cast<char>(msg.wParam);
+	}
+
+	return static_cast<int>(msg.wParam);
 }

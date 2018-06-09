@@ -18,7 +18,7 @@ void DrawBackGround() {
 	VkCreateCommandPool(Device, &CommandPoolCreateInfo, nullptr, &CommandPool);
 	VkAllocateCommandBuffers(Device, &CommandBufferAllocateInfo, &CommandBuffer);
 	VkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo);
-	ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f }; // Cornflower Blue
+	ClearColorValue = { 0.4f, 0.6f, 0.9f, 1.0f };
 	VkCmdClearColorImage(CommandBuffer, SwapchainImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 		&ClearColorValue, 1, &ImageSubresourceRange);
 	VkEndCommandBuffer(CommandBuffer);
@@ -50,7 +50,6 @@ void DestroyBackGround(){
 	VkDestroySemaphore(Device, Semaphore, nullptr);
 	VkDestroyCommandBuffers(Device, CommandPool);
 	VkDestroyCommandPool(Device, CommandPool, nullptr);
-	//VkDestroyImage(Device, SwapchainImage, nullptr);
 	VkDestroySwapchain(Device, Swapchain, nullptr);
 	VkDestroySurface(Instance, Surface, nullptr);
 }

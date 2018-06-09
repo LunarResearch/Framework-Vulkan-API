@@ -50,8 +50,8 @@ void DestroyBackGround(){
 	VkDestroySemaphore(Device, Semaphore, nullptr);
 	VkDestroyCommandBuffers(Device, CommandPool);
 	VkDestroyCommandPool(Device, CommandPool, nullptr);
-	VkDestroyImage(Device, SwapchainImage, nullptr);
-	//VkDestroySwapchain(Device, Swapchain, nullptr);
+	//VkDestroyImage(Device, SwapchainImage, nullptr);
+	VkDestroySwapchain(Device, Swapchain, nullptr);
 	VkDestroySurface(Instance, Surface, nullptr);
 }
 

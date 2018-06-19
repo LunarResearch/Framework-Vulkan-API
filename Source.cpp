@@ -73,13 +73,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 		break;
 
 	case WM_CLOSE:
-		DestroyPrimitive();
-		DestroyBackGround();
-		DestroyVulkan();
 		DestroyWindow(hWnd);
 		break;
 
 	case WM_DESTROY:
+		DestroyPrimitive();
+		DestroyBackGround();
+		DestroyVulkan();
 		PostQuitMessage(0);
 		break;
 

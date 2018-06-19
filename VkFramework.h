@@ -76,6 +76,7 @@ VkRect2D Rect2D = {};
 VkPipelineViewportStateCreateInfo PipelineViewportStateCreateInfo = {};
 VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo = {};
 VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo = {};
+VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo = {};
 VkPipelineColorBlendAttachmentState PipelineColorBlendAttachmentState = {};
 VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfo = {};
 VkPipelineDynamicStateCreateInfo PipelineDynamicStateCreateInfo = {};
@@ -411,9 +412,54 @@ void PipelineRasterizationStateCreateInfoStructure() {
 	PipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
 }
 
-// void PipelineMultisampleStateCreateInfoStructure()
-// void PipelineColorBlendAttachmentStateStructure()
-// void PipelineColorBlendStateCreateInfoStructure()
+void PipelineMultisampleStateCreateInfoStructure() {
+	PipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	PipelineMultisampleStateCreateInfo.pNext = nullptr;
+	PipelineMultisampleStateCreateInfo.flags = NULL;
+	PipelineMultisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_32_BIT;
+	PipelineMultisampleStateCreateInfo.sampleShadingEnable = VK_FALSE;
+	PipelineMultisampleStateCreateInfo.minSampleShading = 0.0f;
+	PipelineMultisampleStateCreateInfo.pSampleMask = 0;
+	PipelineMultisampleStateCreateInfo.alphaToCoverageEnable = VK_FALSE;
+	PipelineMultisampleStateCreateInfo.alphaToOneEnable = VK_FALSE;
+}
+
+void PipelineDepthStencilStateCreateInfoStructure() {
+	PipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	PipelineDepthStencilStateCreateInfo.pNext = nullptr;
+	PipelineDepthStencilStateCreateInfo.flags = NULL;
+	/*PipelineDepthStencilStateCreateInfo.depthTestEnable = ;
+	PipelineDepthStencilStateCreateInfo.depthWriteEnable = ;
+	PipelineDepthStencilStateCreateInfo.depthCompareOp = ;
+	PipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = ;
+	PipelineDepthStencilStateCreateInfo.stencilTestEnable = ;
+	PipelineDepthStencilStateCreateInfo.front = ;
+	PipelineDepthStencilStateCreateInfo.back = ;
+	PipelineDepthStencilStateCreateInfo.minDepthBounds = ;
+	PipelineDepthStencilStateCreateInfo.maxDepthBounds = ;*/
+}
+
+void PipelineColorBlendAttachmentStateStructure() {
+	/*PipelineColorBlendAttachmentState.blendEnable = ;
+	PipelineColorBlendAttachmentState.srcColorBlendFactor = ;
+	PipelineColorBlendAttachmentState.dstColorBlendFactor = ;
+	PipelineColorBlendAttachmentState.colorBlendOp = ;
+	PipelineColorBlendAttachmentState.srcAlphaBlendFactor = ;
+	PipelineColorBlendAttachmentState.dstAlphaBlendFactor = ;
+	PipelineColorBlendAttachmentState.alphaBlendOp = ;
+	PipelineColorBlendAttachmentState.colorWriteMask = ;*/
+}
+
+void PipelineColorBlendStateCreateInfoStructure() {
+	PipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	PipelineColorBlendStateCreateInfo.pNext = nullptr;
+	PipelineColorBlendStateCreateInfo.flags = NULL;
+	//PipelineColorBlendStateCreateInfo.logicOpEnable = ;
+	//PipelineColorBlendStateCreateInfo.logicOp = ;
+	PipelineColorBlendStateCreateInfo.attachmentCount = 1;
+	PipelineColorBlendStateCreateInfo.pAttachments = &PipelineColorBlendAttachmentState;
+	//PipelineColorBlendStateCreateInfo.blendConstants = ;
+}
 
 void PipelineDynamicStateCreateInfoStructure() {
 	PipelineDynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -434,14 +480,14 @@ void GraphicsPipelineCreateInfoStructure() {
 	GraphicsPipelineCreateInfo.pTessellationState = &PipelineTessellationStateCreateInfo;
 	GraphicsPipelineCreateInfo.pViewportState = &PipelineViewportStateCreateInfo;
 	GraphicsPipelineCreateInfo.pRasterizationState = &PipelineRasterizationStateCreateInfo;
-	//GraphicsPipelineCreateInfo.pMultisampleState = ;
-	//GraphicsPipelineCreateInfo.pDepthStencilState = ;
-	//GraphicsPipelineCreateInfo.pColorBlendState = ;
+	GraphicsPipelineCreateInfo.pMultisampleState = &PipelineMultisampleStateCreateInfo;
+	GraphicsPipelineCreateInfo.pDepthStencilState = &PipelineDepthStencilStateCreateInfo;
+	GraphicsPipelineCreateInfo.pColorBlendState = &PipelineColorBlendStateCreateInfo;
 	GraphicsPipelineCreateInfo.pDynamicState = &PipelineDynamicStateCreateInfo;
 	GraphicsPipelineCreateInfo.layout = PipelineLayout;
 	GraphicsPipelineCreateInfo.renderPass = RenderPass;
 	GraphicsPipelineCreateInfo.subpass = 0;
-	GraphicsPipelineCreateInfo.basePipelineHandle = Pipeline;
+	GraphicsPipelineCreateInfo.basePipelineHandle = nullptr;
 	GraphicsPipelineCreateInfo.basePipelineIndex = 0;
  }
 

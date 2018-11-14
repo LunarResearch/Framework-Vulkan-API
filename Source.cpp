@@ -65,28 +65,28 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 	case WM_CREATE:
 		CreateVulkan();
 		Win32SurfaceCreateInfoStructure(reinterpret_cast<CREATESTRUCT *>(lParam)->hInstance, hWnd);
-		break;
+		return 0;
 
 	case WM_PAINT:
 		DrawBackGround();
 		DrawPrimitive();
-		break;
+		return 0;
 
 	case WM_CLOSE:
 		DestroyWindow(hWnd);
-		break;
+		return 0;
 
 	case WM_DESTROY:
 		DestroyPrimitive();
 		DestroyBackGround();
 		DestroyVulkan();
 		PostQuitMessage(0);
-		break;
+		return 0;
 
 	default:
-		break;
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	return 0;
 }
 
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
